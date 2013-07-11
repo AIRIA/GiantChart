@@ -11,9 +11,10 @@ package giant.charts.sereis
 		public var offsetRatio:Number = 0;
 		public var columnColor:uint;
 		private var columns:Array = [];
-		public function ColumnSeries()
+		public function ColumnSeries(yField:String="")
 		{
 			super();
+			this.yField = yField;
 		} 
 		
 		override protected function createChildren():void{

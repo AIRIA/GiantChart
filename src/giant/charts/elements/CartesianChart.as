@@ -1,18 +1,32 @@
 package giant.charts.elements
 {
+	import flash.display.Graphics;
+	import flash.events.MouseEvent;
+	
 	import giant.charts.axis.HorizontalAxis;
 	import giant.charts.managers.ThemeManager;
 	import giant.charts.sereis.ColumnSeries;
 	import giant.charts.sereis.SeriesBase;
 	import giant.components.Canvas;
 
+	/**
+	 * 笛卡尔图表
+	 */
 	public class CartesianChart extends ChartBase
 	{
+		public var tipRenderer:Function = null;
+		public var verticalLabelRenderer:Function = null;
+		public var horizontalLabelRenderer:Function = null;
+		
+		
 		private var _hAxis:HorizontalAxis;
 		private var _vAxis:VerticalAxis;
 		private var hAxisHolder:Canvas;
 		private var vAxisHolder:Canvas;
 		private var seriesHolder:Canvas;
+		//详细数据tip layer
+		private var dataTipHolder:Canvas = new Canvas();
+		
 		private var columnSerires:Array = [];
 		public function CartesianChart()
 		{
@@ -75,14 +89,17 @@ package giant.charts.elements
 			hAxisHolder = new Canvas();
 			vAxisHolder = new Canvas();
 			seriesHolder = new Canvas();
-			seriesHolder.backgroundAlpha = 0;
+			dataTipHolder.backgroundAlpha = seriesHolder.backgroundAlpha = 0;
+			
 			vAxisHolder.width = 40;
 			hAxisHolder.height = 40;
 			vAxis.height = vAxisHolder.height = height - hAxisHolder.height;
 			hAxis.width = hAxisHolder.width = width - vAxisHolder.width;
-			seriesHolder.width = width - vAxisHolder.width;
-			seriesHolder.height = height - hAxisHolder.height;
-			seriesHolder.x = vAxisHolder.width ;
+			dataTipHolder.width = seriesHolder.width = width - vAxisHolder.width;
+			dataTipHolder.height = seriesHolder.height = height - hAxisHolder.height;
+			dataTipHolder.x = seriesHolder.x = vAxisHolder.width ;
+			dataTipHolder.mouseEnabled = false;
+			seriesHolder.mouseChildren = false;
 			
 			hAxisHolder.y = vAxisHolder.height;
 			hAxisHolder.x = vAxisHolder.width;
@@ -90,10 +107,36 @@ package giant.charts.elements
 			hAxisHolder.backgroundColor = 0x443322;
 			vAxisHolder.backgroundColor = 0x342123;
 			hAxisHolder.addChild(hAxis);
-			
+			seriesHolder.addEventListener(MouseEvent.MOUSE_MOVE,showTipHandler);
 			addChild(vAxisHolder);
 			addChild(hAxisHolder);
 			addChild(seriesHolder);
+			addChild(dataTipHolder);
+			
+		}
+		
+		private function showTipHandler(event:MouseEvent):void{
+			var localX:Number = event.localX;
+			var blockNum:Number = dataProvider.length;
+			var blockWidth:Number = dataTipHolder.width/blockNum;
+			for(var i:int = blockNum-1;i>=0;i--){
+				if(localX>(blockWidth*i)){
+					var tipGraphic:Graphics = dataTipHolder.graphics;
+					tipGraphic.clear();
+					tipGraphic.lineStyle(1,0xFFFFFF);
+					var x:Number = blockWidth*(i+0.5);
+					var y:Number = dataTipHolder.height;
+					tipGraphic.moveTo(x,0);
+					tipGraphic.lineTo(x,y);
+					break;
+				}
+			}
+			
+//			if(tipRenderer){
+//				tipRenderer(seriesHolder);
+//			}else{
+//				
+//			}
 		}
 		
 		override protected function updateDisplayList():void{

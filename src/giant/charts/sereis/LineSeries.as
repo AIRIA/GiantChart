@@ -13,9 +13,10 @@ package giant.charts.sereis
 
 	public class LineSeries extends SeriesBase
 	{
-		public function LineSeries()
+		public function LineSeries(yField:String="")
 		{
 			super();
+			this.yField = yField;
 		}
 		private function createWithEffect():void{
 			//Bounce.easeOut

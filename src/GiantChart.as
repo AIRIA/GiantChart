@@ -13,12 +13,9 @@ package
 		public function GiantChart()
 		{
 			var series:Array = [];
-			var expenses:LineSeries = new LineSeries();
-			expenses.yField = "Expenses";
-			var profit:LineSeries = new LineSeries();
-			profit.yField = "Profit";
-			var amount:ColumnSeries = new ColumnSeries();
-			amount.yField = "Amount";
+			var expenses:LineSeries = new LineSeries("Expenses");
+			var profit:LineSeries = new LineSeries("Profit");
+			var amount:ColumnSeries = new ColumnSeries("Amount");
 			series.push(amount);
 			series.push(expenses);
 			series.push(profit);
