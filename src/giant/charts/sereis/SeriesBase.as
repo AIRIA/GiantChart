@@ -12,7 +12,7 @@ package giant.charts.sereis
 		public var xField:String;
 		public var yField:String;
 		public var vAxis:LinearAxis = null;
-		public var dataProvider:Array;
+		public var dataProvider:Object;
 		public var seriesColor:uint = 0x233333;
 		protected var hotPointLayer:Canvas;
 		protected var originArray:Array = [];
@@ -39,7 +39,7 @@ package giant.charts.sereis
 		}
 		
 		protected function initSeriesData():void{
-			var len:int = dataProvider.length;
+			var len:int = dataProvider.data.length;
 			for(var i:int=0;i<len;i++){
 				seriesData[i] = getValue(i);
 				originArray[i] = 0;
@@ -47,7 +47,7 @@ package giant.charts.sereis
 		}
 		
 		protected function get pointsNum():Number{
-			return dataProvider.length;
+			return dataProvider.data.length;
 		}
 		
 		protected function get blockSize():Number{
@@ -59,7 +59,7 @@ package giant.charts.sereis
 		}
 		
 		protected function getValue(idx:int):Number{
-			return dataProvider[idx][yField];
+			return dataProvider.data[idx][yField];
 		}
 		
 		protected function getVerticalPos(idx:int):Number{

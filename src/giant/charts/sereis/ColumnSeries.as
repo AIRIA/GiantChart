@@ -42,9 +42,8 @@ package giant.charts.sereis
 		}
 		
 		override protected function updateDisplayList():void{
-			
-			render(points());
-//			createWithEffect();
+//			render(points());
+			createWithEffect();
 		}
 	}
 }

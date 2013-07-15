@@ -20,19 +20,18 @@ package giant.charts.axis
 			graphics.beginFill(ThemeManager.axisColor);
 			graphics.drawRect(0,0,explicitWidth,ThemeManager.axisStrokeSize);
 			graphics.endFill();
-			var tickLen:int = chartDataProvider.length;
+			var tickLen:int = chartDataProvider.labels.length;
 			var blockSize:Number = width/tickLen;
 			var obj:Object = null;
 			for(var i:int=0;i<tickLen;i++){
 				var hTick:HorizontalTick = new HorizontalTick();
 				hTick.x = blockSize*i;
 				ticks[i] = hTick;
-				obj = chartDataProvider[i];
 				var tickLabel:TextField = new TextField();
 				var textFormat:TextFormat = new TextFormat("Arial",ThemeManager.tickLabelSize,ThemeManager.tickLabelColor);
 				tickLabel.autoSize = TextFieldAutoSize.CENTER;
 				tickLabel.defaultTextFormat = textFormat;
-				tickLabel.text = obj[xField];
+				tickLabel.text = chartDataProvider.labels[i];
 				tickLabel.x = hTick.x + blockSize/2 - tickLabel.width/2;
 				tickLabel.y = 5;
 				tickLabel.selectable = false;

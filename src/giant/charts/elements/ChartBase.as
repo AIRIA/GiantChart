@@ -6,7 +6,7 @@ package giant.charts.elements
 	
 	public class ChartBase extends Canvas
 	{
-		public var dataProvider:Array;
+		public var dataProvider:Object;
 		private var _anotationElements:Array = [];
 		private var _backgroundElements:Array = [];
 		protected var anotationLayer:Canvas;

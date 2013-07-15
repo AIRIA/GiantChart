@@ -2,6 +2,8 @@ package giant.charts.elements
 {
 	import flash.display.Graphics;
 	import flash.events.MouseEvent;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	
 	import giant.charts.axis.HorizontalAxis;
 	import giant.charts.managers.ThemeManager;
@@ -54,7 +56,7 @@ package giant.charts.elements
 		
 		override protected function commitProperties():void{
 			var seriesLen:int = series.length;
-			var dpLen:int = dataProvider.length;
+			var dpLen:int = dataProvider.data.length;
 			for(var i:int=0;i<seriesLen;i++){
 				var currentSeries:SeriesBase = series[i];
 				currentSeries.width = seriesHolder.width;
@@ -70,7 +72,7 @@ package giant.charts.elements
 					currentSeries.vAxis = vAxis;
 				}
 				for(var j:int=0;j<dpLen;j++){
-					var currentValue:Number = dataProvider[j][currentSeries.yField]
+					var currentValue:Number = dataProvider.data[j][currentSeries.yField]
 					if(vAxis.maximum < currentValue){
 						vAxis.maximum = currentValue;
 					}
@@ -108,17 +110,60 @@ package giant.charts.elements
 			vAxisHolder.backgroundColor = 0x342123;
 			hAxisHolder.addChild(hAxis);
 			seriesHolder.addEventListener(MouseEvent.MOUSE_MOVE,showTipHandler);
+			seriesHolder.addEventListener(MouseEvent.MOUSE_OUT,hideTipHandler);
 			addChild(vAxisHolder);
 			addChild(hAxisHolder);
 			addChild(seriesHolder);
 			addChild(dataTipHolder);
-			
+			createTipTpl();
+		}
+		
+		private var tipCanvas:Canvas = new Canvas();
+		private var tipLabels:Array = [];
+		/**
+		 * 创建tip模板
+		 */		
+		private function createTipTpl():void{
+			var height:Number = 0;
+			var width:Number = 0;
+			var lineHeight:Number = 20;
+			var tf:TextFormat = new TextFormat("Arial",ThemeManager.tickLabelSize,ThemeManager.tickLabelColor);
+			for(var i:int=0;i<series.length;i++){
+				var seriesBase:SeriesBase = series[i];
+				var label:TextField = new TextField();
+				label.x = 10;
+				label.y = lineHeight*i;
+				label.selectable = false;
+				label.defaultTextFormat = tf;
+				label.text = seriesBase.yField+":";
+				label.textColor = ThemeManager.seriesColor[i];
+				tipLabels.push(label);
+				tipCanvas.addChild(label);
+				if(label.width>width){
+					width = label.width;
+				}
+				height = label.y + lineHeight;
+			}
+			dataTipHolder.addChild(tipCanvas);
+			tipCanvas.graphics.lineStyle(1,0xCCCCCC);
+			tipCanvas.graphics.beginFill(0x333333,0.8);
+			tipCanvas.graphics.drawRoundRect(0,0,width,height,10,10);
+			tipCanvas.graphics.endFill();
+			dataTipHolder.visible = false;
+		}
+		
+		private function hideTipHandler(event:MouseEvent):void{
+			dataTipHolder.visible = false;
 		}
 		
 		private function showTipHandler(event:MouseEvent):void{
+			if(dataTipHolder.visible==false){
+				dataTipHolder.visible = true;
+			}
 			var localX:Number = event.localX;
-			var blockNum:Number = dataProvider.length;
+			var blockNum:Number = dataProvider.data.length;
 			var blockWidth:Number = dataTipHolder.width/blockNum;
+			tipCanvas.mouseEnabled = false;
 			for(var i:int = blockNum-1;i>=0;i--){
 				if(localX>(blockWidth*i)){
 					var tipGraphic:Graphics = dataTipHolder.graphics;
@@ -128,6 +173,15 @@ package giant.charts.elements
 					var y:Number = dataTipHolder.height;
 					tipGraphic.moveTo(x,0);
 					tipGraphic.lineTo(x,y);
+					tipCanvas.x = x+5;
+					tipCanvas.y = dataTipHolder.height - tipCanvas.height >> 1;
+					
+					for(var j:int=0;j<series.length;j++){
+						var data:Object = dataProvider.data[i];
+						var label:TextField = tipLabels[j];
+						label.text = series[j].yField+":"+data[series[j].yField];
+					}
+					
 					break;
 				}
 			}
